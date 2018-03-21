@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="urn:MandiriService" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:MandiriService">
+<types>
+<xsd:schema targetNamespace="urn:MandiriService"
+>
+ <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+ <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+</xsd:schema>
+</types>
+<message name="SendDataRequest">
+  <part name="string0" type="xsd:string" /></message>
+<message name="SendDataResponse">
+  <part name="return" type="xsd:string" /></message>
+<portType name="MandiriServicePortType">
+  <operation name="SendData">
+    <documentation>Send SSP to Bank Mandiri</documentation>
+    <input message="tns:SendDataRequest"/>
+    <output message="tns:SendDataResponse"/>
+  </operation>
+</portType>
+<binding name="MandiriServiceBinding" type="tns:MandiriServicePortType">
+  <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <operation name="SendData">
+    <soap:operation soapAction="urn:MandiriService#sendData" style="rpc"/>
+    <input><soap:body use="encoded" namespace="urn:MandiriService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="urn:MandiriService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+</binding>
+<service name="MandiriService">
+  <port name="MandiriServicePort" binding="tns:MandiriServiceBinding">
+    <soap:address location="http://localhost/library/ws/MandiriWS.php"/>
+  </port>
+</service>
+</definitions>

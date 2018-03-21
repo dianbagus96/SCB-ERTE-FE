@@ -1,0 +1,124 @@
+.style1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-style: normal;
+}
+td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #333333;
+}
+.textbox {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #333333;
+	background-color: #FFFEFD;
+	height: 20px;
+	border: 1px solid #CCCCCC;
+	padding-top: 2px;
+	padding-right: 2px;
+	padding-left: 2px;
+}
+.textarea {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #333333;
+	background-color: #FFFEFD;
+	border: 1px solid #CCCCCC;
+	padding-top: 2px;
+	padding-right: 2px;
+	padding-left: 2px;
+}
+
+a.menu:link, a.menu:visited {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: none;
+}
+a.menu:hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #333333;
+	text-decoration: none;
+}
+
+a:link, a:visited {
+	color: blue;
+}
+
+a.menu1:link, a.menu1:visited {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #1E5311;
+	text-decoration: none;
+}
+a.menu1:hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FF9900;
+	text-decoration: none;
+}
+
+.titlebar {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.bglightgrey {
+	background-color: #eeeeee;
+}
+.bglightgrey2 {
+	background-color: #F8F8F8;
+}
+.fontwhite {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #FFFFFF;
+}
+.titlebar2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #333333;
+}
+.button {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #FF9900;
+	border: 1px solid #999999;
+	height: 22px;
+	cursor:hand;
+	background-image:  url("../images/btn.jpg");
+
+}
+th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #555555;
+	background-color: #A7EFFE;
+	background-image:  url("../images/th.jpg");
+	height: 22px;
+}
+
+.header1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #555555;
+	background-color: #A7EFFE;
+	background-image:  url("../images/th1.jpg");
+	height: 22px;
+}
+
+.sort{
+	cursor:hand;
+}

@@ -1,0 +1,12 @@
+
+<?php
+ 			$name = 'DOKACC';
+			$Dokname 	= $name.$group.".".date('ymdHis').".FLT";	
+			$file 		= '/home/RTESCB/TOBACKEND/'.$Dokname;
+						
+			$filename 	= fopen($file, 'w');
+			fputs($filename, $data);
+			fclose($filename);
+			
+			
+?>

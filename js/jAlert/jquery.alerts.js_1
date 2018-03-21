@@ -1,0 +1,248 @@
+(function($) {	
+	base_url = 'http://uatscbrte.ebank-services.com/';
+	
+	$.jAlerts = {
+		
+		// These properties can be read/written by accessing $.jAlerts.propertyName from your scripts at any time
+	    verticalOffset: -75,                // vertical offset of the dialog from center screen, in pixels
+		horizontalOffset: 0,                // horizontal offset of the dialog from center screen, in pixels/
+		repositionOnResize: true,           // re-centers the dialog on window resize
+		overlayOpacity: .4,                // transparency level of overlay
+		overlayColor: '#000',               // base color of overlay
+		draggable: false,                    // make the dialogs draggable (requires UI Draggables plugin)
+		okButton: '&nbsp;OK&nbsp;',         // text for the OK button
+		cancelButton: '&nbsp;Cancel&nbsp;', // text for the Cancel button
+		dialogClass: null,                  // if specified, this class will be applied to all dialogs
+		
+		// Public methods
+		
+		jAlert: function(message, title, callback) {
+			if( title == null ) title = 'uatscbrte.ebank-services.com';
+			$.jAlerts._show(title, message, null, 'jAlert', function(result) {
+				if( callback ) callback(result);
+			});
+		},
+		
+		confirm: function(message, title, callback) {
+			if( title == null ) title = 'Confirm';
+			$.jAlerts._show(title, message, null, 'confirm', function(result) {
+				if( callback ) callback(result);
+			});
+		},
+			
+		prompt: function(message, value, title, callback) {
+			if( title == null ) title = 'Prompt';
+			$.jAlerts._show(title, message, value, 'prompt', function(result) {
+				if( callback ) callback(result);
+			});
+		},
+		select: function(message, value, title, callback) {
+			if( title == null ) title = 'Select';
+			$.jAlerts._show(title, message, value, 'select', function(result) {
+				if( callback ) callback(result);
+			});
+		},
+		
+		// Private methods
+		
+		_show: function(title, msg, value, type, callback) {
+			
+			$.jAlerts._hide();
+			$.jAlerts._overlay('show');
+			
+			$("BODY").append(
+			  '<div id="popup_container">' +
+			    '<h1 id="popup_title"></h1>' +
+			    '<div id="popup_content">' +
+			      '<div id="popup_message"></div>' +
+				'</div>' +
+			  '</div>');
+			
+			if( $.jAlerts.dialogClass ) $("#popup_container").addClass($.jAlerts.dialogClass);
+			
+			// IE6 Fix
+			var pos = ($.browser.msie && parseInt($.browser.version) <= 6 ) ? 'absolute' : 'fixed'; 
+			
+			$("#popup_container").css({
+				position: pos,
+				zIndex: 99999,
+				padding: 0,
+				margin: 0
+			});
+			
+			$("#popup_title").text(title);
+			$("#popup_title").html("<img src='"+base_url+"js/jAlert/images/logo_scb.png' style='width:60px;float:left;margin-top:-2px;margin-left:5px'><br>");
+			$("#popup_content").addClass(type);
+			$("#popup_message").text(msg);
+			$("#popup_message").html( $("#popup_message").text().replace(/\n/g, '<br />') );
+			
+			$("#popup_container").css({
+				minWidth: $("#popup_container").outerWidth(),
+				maxWidth: $("#popup_container").outerWidth()
+			});
+			
+			$.jAlerts._reposition();
+			$.jAlerts._maintainPosition(true);
+			
+			switch( type ) {
+				case 'jAlert':
+					$("#popup_message").after('<div id="popup_panel"><input type="button" value="' + $.jAlerts.okButton + '" id="popup_ok" /></div>');
+					$("#popup_ok").click( function() {
+						$.jAlerts._hide();
+						callback(true);
+					});
+					$("#popup_ok").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback(true);
+					});
+					$("#popup_cancel").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback(false);
+					});
+					$("#popup_ok").focus();
+					$("#popup_ok, #popup_cancel").keypress( function(e) {
+						if( e.keyCode == 13 ) $("#popup_ok").trigger('click');
+						if( e.keyCode == 27 ) $("#popup_cancel").trigger('click');
+					});
+				break;
+				case 'confirm':
+					$("#popup_message").after('<div id="popup_panel"><input type="button" value="' + $.jAlerts.okButton + '" id="popup_ok" /> <input type="button" value="' + $.jAlerts.cancelButton + '" id="popup_cancel" /></div>');
+					$("#popup_ok").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback(true);
+					});
+					$("#popup_cancel").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback(false);
+					});
+					$("#popup_ok").focus();
+					$("#popup_ok, #popup_cancel").keypress( function(e) {
+						if( e.keyCode == 13 ) $("#popup_ok").trigger('click');
+						if( e.keyCode == 27 ) $("#popup_cancel").trigger('click');
+					});
+				break;
+				case 'prompt':
+					$("#popup_message").append('<br /><input type="text" size="30" id="popup_prompt" />').after('<div id="popup_panel"><input type="button" value="' + $.jAlerts.okButton + '" id="popup_ok" /> <input type="button" value="' + $.jAlerts.cancelButton + '" id="popup_cancel" /></div>');
+					$("#popup_prompt").width( $("#popup_message").width() );
+					$("#popup_ok").click( function() {
+						var val = $("#popup_prompt").val();
+						$.jAlerts._hide();
+						if( callback ) callback( val );
+					});
+					$("#popup_cancel").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback( null );
+					});
+					$("#popup_prompt, #popup_ok, #popup_cancel").keypress( function(e) {
+						if( e.keyCode == 13 ) $("#popup_ok").trigger('click');
+						if( e.keyCode == 27 ) $("#popup_cancel").trigger('click');
+					});
+					if( value ) $("#popup_prompt").val(value);
+					$("#popup_prompt").focus().select();
+				break;
+				case 'select':
+					$("#popup_message").append('<br /><select name="popup_prompt" id="popup_prompt" ><option value="011"> 011-Transaksi barang ekspor </option><option value="012"> 012-Transaksi barang impor </option><option value="013"> 013-Pengembalian dana </option><option value="014"> 014-Pembayaran dimuka </option><option value="018"> 018-Pembayaran dimuka penuh </option><option value="019"> 019-Pembayaran dimuka sebagian </option><option value="015"> 015-Bunkers & Stores </option><option value="099"> 099-Transaksi barang lainnya </option><option value="016"> 016-Jasa pemrosesan barang </option><option value="017"> 017-Jasa perbaikan barang </option><option value="021"> 021-Jasa transportasi penumpang </option><option value="022"> 022-Jasa transportasi angkutan barang ke luar wilayah Indonesia </option><option value="023"> 023-Jasa transportasi angkutan barang ke dalam wilayah Indonesia </option><option value="024"> 024-Jasa transportasi angkutan barang lainnya </option><option value="025"> 025-Jasa transportasi lainnya </option><option value="030"> 030-Biaya perjalanan </option><option value="040"> 040-Biaya pendidikan </option><option value="050"> 050-Jasa pos dan komunikasi </option><option value="061"> 061-Jasa konstuksi di luar Indonesia </option><option value="062"> 062-Jasa konstruksi di Indonesia </option><option value="070"> 070-Jasa asuransi </option><option value="080"> 080-Jasa keuangan </option><option value="090"> 090-Jasa komputer dan informasi </option><option value="100"> 100-Royalti dan lisensi </option><option value="111"> 111-Operasional leasing </option><option value="112"> 112-Sewa tanah dan gedung </option><option value="121"> 121-Jasa bidang hukum, akutansi, pajak, bisnis dan manajemen </option><option value="122"> 122-Jasa bidang pertambangan, pertanian, arsitekrut dan sejenisnya </option><option value="123"> 123-Jasa penelitian dan pengembangan </option><option value="124"> 124-Jasa administrasi dan operasional </option><option value="127"> 127-Penyelesaian saldo rekening terkait ekspor </option><option value="129"> 129-Penyelesaian saldo rekening tidak terkait ekspor </option><option value="130"> 130-Jasa dalam bidang seni, budaya dan rekreasi </option><option value="140"> 140-Jasa pemerintah </option><option value="199"> 199-Transaksi jasa lainnya </option><option value="150"> 150-Transfer penghasilan </option><option value="161"> 161-Pajak, sanksi/denda </option><option value="162"> 162-Hibah/hadiah </option><option value="163"> 163-Penghasilan/pengeluaran tenaga kerja </option><option value="170"> 170-Deviden dan keuntungan </option><option value="181"> 181-Bunga surat berharga yang diterbitkan oleh bukan penduduk </option><option value="182"> 182-Bunga simpanan </option><option value="183"> 183-Bunga pinjaman </option><option value="184"> 184-Bunga surat berharga yang diterbitkan oleh penduduk </option><option value="189"> 189-Penghasilan/pengeluaran lainnya </option><option value="191"> 191-Jual beli non financial assets </option><option value="192"> 192-Jual beli aktiva tetap </option><option value="201"> 201-Penyertaan modal </option><option value="202"> 202-Divertasi penyertaan modal </option><option value="311"> 311-Surat berharga yang diterbitkan oleh bukan  penduduk (saham) </option><option value="321"> 321-Surat berharga yang diterbitkan oleh bukan  penduduk (obligasi) </option><option value="322"> 322-Surat berharga yang diterbitkan oleh bukan  penduduk (Medium term notes) </option><option value="323"> 323-Surat berharga yang diterbitkan oleh bukan  penduduk jangka panjang lainnya </option><option value="331"> 331-Surat berharga yang diterbitkan oleh bukan  penduduk (Treasury Bills) </option><option value="332"> 332-Surat berharga yang diterbitkan oleh bukan  penduduk (Promissory notes) </option><option value="333"> 333-Surat berharga yang diterbitkan oleh bukan  penduduk jangka pendek lainnya </option><option value="341"> 341-Surat berharga yang diterbitkan oleh penduduk (saham) </option><option value="342"> 342-Surat berharga yang diterbitkan oleh penduduk (Efek ekuitas lainnya) </option><option value="351"> 351-Surat berharga yang diterbitkan oleh penduduk (obligasi pemerintah) </option><option value="352"> 352-Surat berharga yang diterbitkan oleh penduduk (obligasi perusahaan) </option><option value="353"> 353-Surat berharga yang diterbitkan oleh penduduk (medium term notes) </option><option value="354"> 354-Surat berharga yang diterbitkan oleh penduduk jangka panjang lainnya </option><option value="361"> 351-Surat berharga yang diterbitkan oleh penduduk (Sertifikat Bank Indonesia) </option><option value="362"> 362-Surat berharga yang diterbitkan oleh penduduk (surat perbendaharaan negara) </option><option value="363"> 363-Surat berharga yang diterbitkan oleh penduduk (promissory notes) </option><option value="364"> 364-Surat berharga yang diterbitkan oleh penduduk (Nogotiabe Certificate of Deposit) </option><option value="365"> 365-Surat berharga yang diterbitkan oleh penduduk jangka pendek lainnya </option><option value="371"> 371-Reksadana</option><option value="372"> 372-Reksadana yang diperdagangkan</option><option value="221"> 221-Pemberian/penarikan pinjaman dengan jangka sampai dengan satu tahun</option><option value="222"> 222-Pemberian/penarikan pinjaman dengan jangka lebih dari satu tahun</option><option value="231"> 231-Pengembalian pinjaman dengan jangka sampai dengan satu tahun</option><option value="232"> 232-Pengembalian pinjaman dengan jangka lebih dari satu tahun</option><option value="233"> 233-Financial leasing</option><option value="241"> 241-(Simpanan di Indonesia) Penempatan simpanan sampai dengan 3 bulan</option><option value="242"> 242-(Simpanan di Indonesia) Penempatan simpanan lebih dari 3 s.d 6 bulan</option><option value="243"> 243-(Simpanan di Indonesia) Penempatan simpanan lebih dari 6 bulan</option><option value="245"> 245-(Simpanan di Indonesia) Penarikan simpanan sampai dengan 3 bulan</option><option value="246"> 246-(Simpanan di Indonesia) Penarikan simpanan lebih dari 3 s.d 6 bulan</option><option value="247"> 247-(Simpanan di Indonesia) Penarikan simpanan lebih dari 6 bulan</option><option value="251"> 251-(Simpanan di luar Indonesia) Penempatan simpanan sampai dengan 3 bulan</option><option value="252"> 252-(Simpanan di luar Indonesia) Penempatan simpanan lebih dari 3 bulan</option><option value="255"> 255-(Simpanan di luar Indonesia) Penarikan simpanan sampai dengan 3 bulan</option><option value="256"> 256-(Simpanan di luar Indonesia) Penarikan simpanan lebih dari 3 bulan</option><option value="257"> 257-(Simpanan di Indonesia) Penarikan devisa hasil ekspor</option><option value="261"> 261-Transaksi spot valuta asing terhadap rupiah</option><option value="262"> 262-Transaksi spot antar valuta asing </option><option value="263"> 263-Transaksi forward valuta asing terhadap rupiah</option><option value="264"> 264-Transaksi forward antar valuta asing </option><option value="270"> 270-Transaksi derivatif</option><option value="299"> 299-Transaksi modal/keuangan lainnya </option></select>').after('<div id="popup_panel"><input type="button" value="' + $.jAlerts.okButton + '" id="popup_ok" /> <input type="button" value="' + $.jAlerts.cancelButton + '" id="popup_cancel" /></div>');
+					$("#popup_prompt").width( $("#popup_message").width() );
+					$("#popup_ok").click( function() {
+						var val = $("#popup_prompt").val();
+						$.jAlerts._hide();
+						if( callback ) callback( val );
+					});
+					$("#popup_cancel").click( function() {
+						$.jAlerts._hide();
+						if( callback ) callback( null );
+					});
+					$("#popup_prompt, #popup_ok, #popup_cancel").keypress( function(e) {
+						if( e.keyCode == 13 ) $("#popup_ok").trigger('click');
+						if( e.keyCode == 27 ) $("#popup_cancel").trigger('click');
+					});
+					if( value ) $("#popup_prompt").val(value);
+					$("#popup_prompt").focus().select();
+				break;
+			}
+			
+			// Make draggable
+			if( $.jAlerts.draggable ) {
+				try {
+					$("#popup_container").draggable({ handle: $("#popup_title") });
+					$("#popup_title").css({ cursor: 'move' });
+				} catch(e) { /* requires jQuery UI draggables */ }
+			}
+		},
+		
+		_hide: function() {
+			$("#popup_container").remove();
+			$.jAlerts._overlay('hide');
+			$.jAlerts._maintainPosition(false);
+		},
+		
+		_overlay: function(status) {
+			switch( status ) {
+				case 'show':
+					$.jAlerts._overlay('hide');
+					$("BODY").append('<div id="popup_overlay"></div>');
+					$("#popup_overlay").css({
+						position: 'absolute',
+						zIndex: 99998,
+						top: '0px',
+						left: '0px',
+						width: '100%',
+						height: $(document).height(),
+						background: $.jAlerts.overlayColor,
+						opacity: $.jAlerts.overlayOpacity
+					});
+				break;
+				case 'hide':
+					$("#popup_overlay").remove();
+				break;
+			}
+		},
+		
+		_reposition: function() {
+			var top = (($(window).height() / 2) - ($("#popup_container").outerHeight() / 2)) + $.jAlerts.verticalOffset;
+			var left = (($(window).width() / 2) - ($("#popup_container").outerWidth() / 2)) + $.jAlerts.horizontalOffset;
+			if( top < 0 ) top = 0;
+			if( left < 0 ) left = 0;
+			
+			// IE6 fix
+			if( $.browser.msie && parseInt($.browser.version) <= 6 ) top = top + $(window).scrollTop();
+			
+			$("#popup_container").css({
+				top: top + 'px',
+				left: left + 'px'
+			});
+			$("#popup_overlay").height( $(document).height() );
+		},
+		
+		_maintainPosition: function(status) {
+			if( $.jAlerts.repositionOnResize ) {
+				switch(status) {
+					case true:
+						$(window).bind('resize', $.jAlerts._reposition);
+					break;
+					case false:
+						$(window).unbind('resize', $.jAlerts._reposition);
+					break;
+				}
+			}
+		}
+		
+	}
+	
+	// Shortuct functions
+	jAlert = function(message, title, callback) {
+		$.jAlerts.jAlert(message, title, callback);
+	}
+	
+	jConfirm = function(message, title, callback) {
+		$.jAlerts.confirm(message, title, callback);
+	};
+		
+	jPrompt = function(message, value, title, callback) {
+		$.jAlerts.prompt(message, value, title, callback);
+	};
+	jSelect = function(message, value, title, callback) {
+		$.jAlerts.select(message, value, title, callback);
+	};
+	
+})(jQuery);
